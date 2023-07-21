@@ -6,6 +6,8 @@ import numpy as np
 import socket
 import subprocess
 import nmap
+# "Metni al" butonuna tıklandığı takdirde serverdan gelen metnin anlık olarak client tarafına düşmesi sağlanıyor. 
+
 
 class Client:
     def __init__(self):
