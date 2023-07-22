@@ -79,20 +79,21 @@ class Client:
         self.root.mainloop()
 
     
-    def metni_al(self):
+   def receive_text(self):
        
            while self.is_running_recv:
             try:
                 data = self.server_socket.recv(1024)
                 if not data:
                     break
-                metin = data.decode("utf-8")
-                self.metin_yeri.insert(tk.END, metin + "\n")
-                self.metin_yeri.see(tk.END)  # Scrollbar ile otomatik olarak en sona inmesini sağlar
-                self.root.update()  # GUI'yi güncellemek için root penceresini yeniler
+                if data.startswith(b"TEXT"):
+                    metin = data.decode("utf-8")
+                    self.metin_yeri.delete("1.0",tk.END)
+                    self.metin_yeri.insert(tk.END, metin + "\n")
+                    self.metin_yeri.see(tk.END)  # Scrollbar ile otomatik olarak en sona in 
+                    self.root.update()  # arayüzü güncelle
             except ConnectionResetError:
-                break
-
+                break   
     def metin_al_thread(self):
         threading.Thread(target=self.metni_al).start()
 
