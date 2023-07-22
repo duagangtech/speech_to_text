@@ -450,8 +450,12 @@ class SesIletisimArayuzuE:
     def yazi_gonder(self):
 
         metin = self.text_place.get("1.0", tk.END).strip()
+        data = "TEXT"+metin 
         if metin:
-            self.client_socket.send(metin.encode("utf-8"))
+            self.client_socket.send(bytes(data,"utf-8"))
+        else:
+            print("bos metin göndermeye çalıştınız!!!")
+            
         """# text_place'de bulunan metni alalım
         metin = self.text_place.get("1.0", tk.END).strip()
 
