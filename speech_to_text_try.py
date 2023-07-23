@@ -19,6 +19,7 @@ class SesIletisimArayuzuE:
     def __init__(self):
         self.HOST = None
         self.PORT = 12345
+        self.PORT_TEXT =12346
         self.CHUNK = 1024
         self.CHANNELS = 1
         self.RATE = 22050
@@ -27,6 +28,8 @@ class SesIletisimArayuzuE:
         self.event = threading.Event()
         self.contunie = True
         self.flag = None
+        self.metin_flag = False
+        
         self.server_socket = None
         self.client_socket = None
         self.stream = None
@@ -448,33 +451,36 @@ class SesIletisimArayuzuE:
         self.flag = False
     
     def yazi_gonder(self):
+        if not self.metin_flag:
+            server_socket_text = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server_socket_text.bind((self.HOST, self.PORT_TEXT))
+            server_socket_text.listen(1)
+            print(f"* Metin için {self.HOST}:{self.PORT_TEXT} dinleniyor...")
 
-        metin = self.text_place.get("1.0", tk.END).strip()
-        data = "TEXT"+metin 
-        if metin:
-            self.client_socket.send(bytes(data,"utf-8"))
-        else:
-            print("bos metin göndermeye çalıştınız!!!")
+            self.client_socket_text, address = server_socket_text.accept()
+            print(f"* Metin için {address} bağlanıldı.")
+
+            self.metin_flag = True  # Bayrağı True olarak ayarla, böylece tekrardan bağlanyı kurmuyor
+
             
-        """# text_place'de bulunan metni alalım
+
         metin = self.text_place.get("1.0", tk.END).strip()
 
-        # Eğer metin boş değilse, istemciye gönderelim
         if metin:
-            url = self.HOST
-            data = {"metin": metin}
-
-            try:
-                # POST isteği ile istemciye metni gönderelim
-                response = requests.post(url, data=data)
-                if response.status_code == 200:
-                    print("Metin istemciye başarıyla gönderildi.")
-                else:
-                    print("Metin gönderimi başarısız oldu. Hata kodu:", response.status_code)
-            except requests.exceptions.RequestException as e:
-                print("İstek gönderimi başarısız oldu:", e)
+            # Metin verisini ikinci soket üzerinden gönder
+            self.client_socket_text.send(bytes(metin, "utf-8"))
+            print("Metin gönderildi:", metin)
         else:
-            print("Gönderilecek metin bulunamadı.")"""
+            print("Boş metin göndermeye çalışıyorsunuz!!!")
+
+        
+
+
+    def yazi_gonder_t(self):
+        """if not self.metin_flag:
+            self.metin_flag = True"""
+        t1 = threading.Thread(target=self.yazi_gonder)
+        t1.start()
         
 
                             ##### ********** ######
